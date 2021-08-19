@@ -1,0 +1,39 @@
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+
+public class App {
+
+    public static void main( String[] args ){
+        System.out.println( "Hello World!" );
+
+        String ubicacion_bd = "C:/Users/GAME/Desktop/El gordo/MincTIC2022/Ciclo 2/Basedatos/ProyectosConstruccion.db";
+        String url = "jdbc:sqlite:" + ubicacion_bd;
+
+        String query = "SELECT mc.Nombre_Material, mc.Precio_Unidad, SUM(c.Cantidad) Total " +
+        "FROM Proyecto p " +
+        "      LEFT JOIN Compra c ON p.ID_Proyecto = c.ID_Proyecto " +
+        "      lEFT JOIN MaterialConstruccion mc ON c.ID_MaterialConstruccion = mc.ID_MaterialConstruccion " +
+        "WHERE p.ID_Proyecto in (183, 331, 352, 365, 76) " +
+        "GROUP BY mc.Nombre_Material " +
+        "ORDER BY mc.Nombre_Material";
+
+        try {
+            Connection conexion = DriverManager.getConnection(url);
+            Statement st = conexion.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            System.out.println("Nombre Material | Precio Unidad | Total");
+
+            while (rs.next()) {
+                String nombreMaterial = rs.getString("Nombre_Material");
+                Integer precioUnidad = rs.getInt("Precio_Unidad");
+                Integer total = rs.getInt("Total");
+                System.out.println(nombreMaterial + " | " + precioUnidad + " | " + total);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Oops! Pasó algo!" + e.getMessage());
+        }
+    }
+}
